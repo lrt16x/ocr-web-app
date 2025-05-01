@@ -1,0 +1,47 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PDF OCR Extractor</title>
+  <style>
+   body{font-family:sans-serif;margin:2rem}
+   .box{border:1px dashed #888;padding:2rem;text-align:center}
+  </style>
+</head>
+<body>
+  <h1>PDF OCR Extractor</h1>
+  <p>Select a PDF file (multi‑page OK). The server will OCR each page and return one text file with page delimiters.</p>
+  <div class="box">
+    <input type="file" id="file" accept="application/pdf">
+    <br><br>
+    <button onclick="upload()">Run OCR</button>
+  </div>
+  <p id="status"></p>
+<script>
+function upload(){
+  const fileInput=document.getElementById('file');
+  if(!fileInput.files.length){alert('Choose a PDF first');return;}
+  const file=fileInput.files[0];
+  const formData=new FormData();
+  formData.append('file',file);
+  document.getElementById('status').innerText='Uploading & processing…';
+  fetch('/ocr',{method:'POST',body:formData})
+    .then(resp=>{
+      if(!resp.ok){throw new Error('Error');}
+      return resp.blob();
+    })
+    .then(blob=>{
+      const url=window.URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;
+      a.download='ocr_output.txt';
+      a.click();
+      document.getElementById('status').innerText='Done! File downloaded.';
+    }).catch(err=>{
+      document.getElementById('status').innerText='Error: '+err;
+    });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+
+flask
+google-cloud-vision
+pdf2image
+pillow
